@@ -14,6 +14,7 @@
 // If you haven't watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/
 // It's on Netflix!
 var request = require("request")
+var fs = require("fs")
 
 function movieThis(){
   //console.log("user input: " + arg2);
@@ -50,22 +51,22 @@ function movieThis(){
         //console.log(JSON.parse(body, null, 2))
         var film = JSON.parse(body)
         if (film.Title === undefined){
-          console.log("==================================================================")
-          console.log("An error occured! Please check the spelling of the film's title.")
-          console.log("==================================================================")
+          var output = "\n==================================================================" +
+          "\nAn error occured! Please check the spelling of the film's title." +
+          "\n==================================================================";
+          console.log(output)
+          fs.appendFile('log.txt', output, function(err, data){})
         } else{
-            console.log("==================================================================")
-            console.log("Title: " + film.Title)
-            console.log("Director: " + film.Director)
-            console.log("Genre(s): " + film.Genre)
-            console.log("Release Year: " + film.Year)
-            console.log("IMDb rating: " + film.Ratings[0].Value);
-            console.log("Rotten Tomatoes Rating: " + film.Ratings[1].Value);
-            console.log("Countr(y/ies) of Production: " + film.Country);
-            console.log("Original Language(s): " + film.Language);
-            console.log("Plot: " + film.Plot);
-            console.log("Cast (top billed): " + film.Actors)
-            console.log("==================================================================")
+            var output = "\n==================================================================" +
+            "\nTitle: " + film.Title+ "\nDirector: " + film.Director + "\nGenre(s): " + film.Genre +
+            "\nRelease Year: " + film.Year+ "\nIMDb rating: " + film.Ratings[0].Value + 
+            "\nRotten Tomatoes Rating: " + film.Ratings[1].Value + 
+            "\nCountr(y/ies) of Production: " + film.Country + 
+            "\nOriginal Language(s): " + film.Language + "\nPlot: " + film.Plot + 
+            "\nCast (top billed): " + film.Actors + 
+            "\n==================================================================";
+            console.log(output)
+            fs.appendFile('log.txt', output, function(err, data){})            
         } 
     
     });
@@ -96,11 +97,12 @@ function myTweets(){
         console.log(JSON.stringify(tweets, null, 2));
         for (var i = 0; i < tweets.length; i++){
           var tweet = tweets[i];
-          console.log("========================================================================")
-          console.log("Author: " + tweet.user.name)
-          console.log("Published on/at: " + tweet.created_at)
-          console.log('"' + tweet.text + '"');
-          console.log("========================================================================")
+          var output = "\n========================================================================"+
+          "\nAuthor: " + tweet.user.name +
+          "\nPublished on/at: " + tweet.created_at +
+          '\n"' + tweet.text + '"'+ "\n========================================================================"
+          console.log(output)
+          fs.appendFile('log.txt', output, function(err, data){})
         }
     }
     });
@@ -148,13 +150,15 @@ function spotifyThis(songname){
       } else {
         artists = dataPath.album.artists[0].name.toString();
       };
-     
-      console.log("==================================================================");
-      console.log("Artist(s): " + artists); 
-      console.log("Track Name: " + dataPath.name);
-      console.log("Preview Link: " + dataPath.external_urls.spotify);
-      console.log("Album: " + dataPath.album.name)
-      console.log("==================================================================");
+      var output = "\n=================================================================="+ 
+      "\nArtist(s): " + artists +
+      "\nTrack Name: " + dataPath.name+ 
+      "\nPreview Link: " + dataPath.external_urls.spotify+ 
+      "\nAlbum: " + dataPath.album.name+ 
+      "\n==================================================================";
+
+      console.log(output)
+      fs.appendFile('log.txt', output, function(err, data){})
 
       });
 };
@@ -219,13 +223,18 @@ for (var k = 3; k < process.argv.length; k++ ){
   arg2 = arg2 + " " + process.argv[k];
 }
 
+var args = "\n Entered command(s): " + arg1 + ", " + arg2
+
+fs.appendFile('log.txt', args, function(err, data){})
 
 function runLIRI(){
 
   if (arg1 === undefined){
-    console.log("\nError! Could not interpret command. Please check spelling and try again.\n Available commands are: \n" +  
+    var output = "\nError! Could not interpret command. Please check spelling and try again.\n Available commands are: \n" +  
     " 'my-tweets' - displays last 20 tweets; \n 'spotify-this' - gives basic song info; \n 'movie-this'" + 
-    "- returns movie information; \n 'do-what-it-says' - a surprise!")
+    "- returns movie information; \n 'do-what-it-says' - a surprise!"
+    console.log(output)
+    fs.appendFile('log.txt', output, function(err, data){})
   } else if (arg1 !== undefined){
     arg1 = arg1.toLowerCase();
     switch  (arg1){
@@ -253,9 +262,11 @@ function runLIRI(){
         break;
     
       default:
-        console.log("\nWhoops, something went wrong! Check the spelling of your command and please try again." + 
+        var output = "\nWhoops, something went wrong! Check the spelling of your command and please try again." + 
         "Valid commands are \n'my-tweets', \n'spotify-this' <song name here>, \n'movie-this' <movie name here>, " +
-        "\n'do-what-it-says'")
+        "\n'do-what-it-says'"
+        console.log(output)
+        fs.appendFile('log.txt', output, function(err, data){})
         break;
     }
   }
