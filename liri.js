@@ -127,6 +127,7 @@ function spotifyThis(songname){
       console.log("Artist(s): " + artists); 
       console.log("Track Name: " + dataPath.name);
       console.log("Preview Link: " + dataPath.external_urls.spotify);
+      console.log("Album: " + dataPath.album.name)
       console.log("==================================================================");
 
       });
