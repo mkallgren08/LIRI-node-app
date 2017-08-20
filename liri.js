@@ -96,7 +96,9 @@ function myTweets(){
         console.log(JSON.stringify(tweets, null, 2));
         for (var i = 0; i < tweets.length; i++){
           var tweet = tweets[i];
+          console.log("========================================================================")
           console.log("Author: " + tweet.user.name)
+          console.log("Published on/at: " + tweet.created_at)
           console.log('"' + tweet.text + '"');
           console.log("========================================================================")
         }
@@ -166,8 +168,44 @@ function spotifyThis(songname){
 // It should run spotify-this-song for "I Want it That Way," as follows the text in random.txt.
 // Feel free to change the text in that document to test out the feature for other commands.
 
+function doWhatItSays(){
+      var fs = require("fs")
+      var readline = require("readline");
 
+      var myInterface = readline.createInterface({
+        input: fs.createReadStream('random.txt')
+      });
 
+      var lineNo = 0;
+      var dataArr = [];
+      
+      myInterface.on('line', function(line){
+        lineNo++;
+        //console.log("Line number " + lineNo +":" + line)
+        var propArr = line.split(",");
+        //console.log(propArr);
+        dataArr.push(propArr);
+        //console.log(dataArr);
+      })
+
+      function randomizer(){
+        var randIndex = Math.floor(Math.random()*dataArr.length)
+        //console.log(randIndex);
+        //console.log(dataArr[randIndex])
+
+        arg1 = dataArr[randIndex][0]
+        //console.log(arg1)
+        if (dataArr[randIndex].length > 1){
+          arg2 = dataArr[randIndex][1]
+          //console.log(arg2)
+        
+        }
+        runLIRI();
+      }    
+      
+      setTimeout(randomizer, 500)
+
+    }
 
 
 //===================================================================================================
@@ -182,40 +220,46 @@ for (var k = 3; k < process.argv.length; k++ ){
 }
 
 
-// switch (new Date().getDay()) {
-//   case 0:
-//       day = "Sunday";
-//       break;
+function runLIRI(){
 
-if (arg1 === undefined){
-  console.log("Error! Could not interpret command. Please check spelling and try again.\n Available commands are: \n" +  
-  " 'my-tweets' - displays last 20 tweets; \n 'spotify-this' - gives basic song info; \n 'movie-this'" + 
-  "- returns movie information; \n 'do-what-it-says' - a surprise!")
-} else if (arg1 !== undefined){
-  arg1 = arg1.toLowerCase();
-  switch  (arg1){
-    case "my-tweets":
-      myTweets();
-      break;
+  if (arg1 === undefined){
+    console.log("\nError! Could not interpret command. Please check spelling and try again.\n Available commands are: \n" +  
+    " 'my-tweets' - displays last 20 tweets; \n 'spotify-this' - gives basic song info; \n 'movie-this'" + 
+    "- returns movie information; \n 'do-what-it-says' - a surprise!")
+  } else if (arg1 !== undefined){
+    arg1 = arg1.toLowerCase();
+    switch  (arg1){
+      case "my-tweets":
+        myTweets();
+        break;
 
-    case "spotify-this":
-      // console.log(arg2)
-      arg2 = "'" + arg2 + "'"
-      if (arg2 === "''"){
-        arg2 = "The Sign Ace of Base"
+      case "spotify-this":
         // console.log(arg2)
-      }
-      spotifyThis(arg2);
-      break;
+        arg2 = "'" + arg2 + "'"
+        if (arg2 === "''"){
+          arg2 = "The Sign Ace of Base"
+          // console.log(arg2)
+        }
+        spotifyThis(arg2);
+        break;
 
-    case "movie-this":
-    console.log(arg2)
-      movieThis();
-      break;
-  
-    default:
-      console.log("Whoops, something went wrong! Please try again.")
-      break;
+      case "movie-this":
+        console.log(arg2)
+        movieThis();
+        break;
+
+      case "do-what-it-says":
+        doWhatItSays();
+        break;
+    
+      default:
+        console.log("\nWhoops, something went wrong! Check the spelling of your command and please try again." + 
+        "Valid commands are \n'my-tweets', \n'spotify-this' <song name here>, \n'movie-this' <movie name here>, " +
+        "\n'do-what-it-says'")
+        break;
+    }
   }
-}
 
+};
+
+runLIRI();
