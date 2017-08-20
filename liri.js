@@ -118,12 +118,17 @@ function spotifyThis(songname){
       if (dataPath.album.artists.length > 1){
         for (var j = 0; j < dataPath.album.artists.length; j++){
           artists = artists + dataPath.album.artists[j].name.toString() + ", ";
-        }
+        };
       } else {
         artists = dataPath.album.artists[0].name.toString();
-      }
+      };
      
-      console.log("Artist(s): " + artists) 
+      console.log("==================================================================");
+      console.log("Artist(s): " + artists); 
+      console.log("Track Name: " + dataPath.name);
+      console.log("Preview Link: " + dataPath.external_urls.spotify);
+      console.log("==================================================================");
+
       });
     // )
     // .then(function(data) {
@@ -152,7 +157,13 @@ function spotifyThis(songname){
 //===================================================================================================
 
 var arg1 = process.argv[2];
-var arg2 = process.argv[3];
+var arg2 = "";
+
+for (var k = 3; k < process.argv.length; k++ ){
+  arg2 = arg2 + " " + process.argv[k];
+}
+
+arg2 = "'" + arg2 + "'";
 
 
 // switch (new Date().getDay()) {
@@ -172,6 +183,7 @@ if (arg1 === undefined){
       break;
 
     case "spotify-this":
+      console.log(arg2)
       spotifyThis(arg2);
       break;
 
