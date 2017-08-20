@@ -16,28 +16,58 @@
 var request = require("request")
 
 function movieThis(){
-
-    var movieName = "";
-
-    for (var i = 3; i < process.argv.length; i++ ){
-        movieName = movieName + "+" + process.argv[i]
+  //console.log("user input: " + arg2);
+  var movieName = ""
+    if (arg2 === ""){
+      movieName = "Mr.+Nobody"
+    } else {
+      var arg2Array = arg2.split(" ")
+      arg2Array.splice(0, 1)
+      //console.log(arg2Array)
+      movieName = arg2Array[0];
+      if (arg2Array.length > 1){
+        for (var m = 1; m < arg2Array.length; m++ ){
+            movieName = movieName + "+" + arg2Array[m]
+        }
+      };
+      movieName = '"' + movieName.toString() + '"';
+      //console.log("Movie Name: " + movieName);
     }
+    
+    //movieName = "Star+Trek";
 
     // Then run a request to the OMDB API with the movie specified
-    var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=61a72983";
+    var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=40e9cece";
 
 
     // This line is just to help us debug against the actual URL.
     console.log(queryUrl);
 
     request(queryUrl, function(error, response, body) {
-
-    // If the request was successful...
-    if (!error && response.statusCode === 200) {
-
-        // Then log the Release Year for the movie
-        console.log("Release Year: " + JSON.parse(body).Year);
-    }
+        if (error) {
+          return console.log('Error occurred: ' + error);
+        } 
+        //console.log(JSON.parse(body, null, 2))
+        var film = JSON.parse(body)
+        if (film.Title === undefined){
+          console.log("==================================================================")
+          console.log("An error occured! Please check the spelling of the film's title.")
+          console.log("==================================================================")
+        } else{
+            console.log("==================================================================")
+            console.log("Title: " + film.Title)
+            console.log("Director: " + film.Director)
+            console.log("Genre(s): " + film.Genre)
+            console.log("Release Year: " + film.Year)
+            console.log("IMDb rating: " + film.Ratings[0].Value);
+            console.log("Rotten Tomatoes Rating: " + film.Ratings[1].Value);
+            console.log("Countr(y/ies) of Production: " + film.Country);
+            console.log("Original Language(s): " + film.Language);
+            console.log("Plot: " + film.Plot);
+            console.log("Cast (top billed): " + film.Actors)
+            console.log("==================================================================")
+        } 
+    
     });
 };
 
@@ -54,16 +84,16 @@ var keys = require("./keys.js")
 
 function myTweets(){
     var client = new Twitter({
-    consumer_key: keys.twitterKeys.consumer_key,
-    consumer_secret: keys.twitterKeys.consumer_secret,
-    access_token_key: keys.twitterKeys.access_token_key,
-    access_token_secret: keys.twitterKeys.access_token_secret
+      consumer_key: keys.twitterKeys.consumer_key,
+      consumer_secret: keys.twitterKeys.consumer_secret,
+      access_token_key: keys.twitterKeys.access_token_key,
+      access_token_secret: keys.twitterKeys.access_token_secret
     });
 
     var params = {screen_name: 'michaelatcode1'};
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
     if (!error) {
-        //console.log(JSON.stringify(tweets, null, 2));
+        console.log(JSON.stringify(tweets, null, 2));
         for (var i = 0; i < tweets.length; i++){
           var tweet = tweets[i];
           console.log("Author: " + tweet.user.name)
@@ -89,13 +119,7 @@ function myTweets(){
 var Spotify = require('node-spotify-api');
 
 function spotifyThis(songname){
-    // var querySongName = "the+sign";
-    // if (songname === undefined){
-      
-    //   querySongName = "the+sign"
-    // }
 
-    var spotifyRequestURL = "https://api.spotify.com/v1/search&q=the%20sign"
     var spotify = new Spotify({
     id: "95de656343084d8f8bc0ecd55c2d028f",
     secret: "24181f3eb6c2484fb892671c30d5a53e",
@@ -112,7 +136,7 @@ function spotifyThis(songname){
         if (err) {
           return console.log('Error occurred: ' + err);
         }
-      console.log(JSON.stringify(data, null, 2))
+      //console.log(JSON.stringify(data, null, 2))
       var dataPath = data.tracks.items[0];
       var artists = "";
       if (dataPath.album.artists.length > 1){
@@ -131,13 +155,6 @@ function spotifyThis(songname){
       console.log("==================================================================");
 
       });
-    // )
-    // .then(function(data) {
-    // console.log(data); 
-    // })
-    // .catch(function(err) {
-    // console.error('Error occurred: ' + err); 
-    // });
 };
 
 
@@ -164,8 +181,6 @@ for (var k = 3; k < process.argv.length; k++ ){
   arg2 = arg2 + " " + process.argv[k];
 }
 
-arg2 = "'" + arg2 + "'";
-
 
 // switch (new Date().getDay()) {
 //   case 0:
@@ -184,12 +199,18 @@ if (arg1 === undefined){
       break;
 
     case "spotify-this":
-      console.log(arg2)
+      // console.log(arg2)
+      arg2 = "'" + arg2 + "'"
+      if (arg2 === "''"){
+        arg2 = "The Sign Ace of Base"
+        // console.log(arg2)
+      }
       spotifyThis(arg2);
       break;
 
     case "movie-this":
-
+    console.log(arg2)
+      movieThis();
       break;
   
     default:
