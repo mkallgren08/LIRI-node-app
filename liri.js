@@ -63,8 +63,13 @@ function myTweets(){
     var params = {screen_name: 'michaelatcode1'};
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
     if (!error) {
-        for (var i = 0; i < tweets.length; i++)
-        console.log(tweets[i].text);
+        //console.log(JSON.stringify(tweets, null, 2));
+        for (var i = 0; i < tweets.length; i++){
+          var tweet = tweets[i];
+          console.log("Author: " + tweet.user.name)
+          console.log('"' + tweet.text + '"');
+          console.log("========================================================================")
+        }
     }
     });
 };
@@ -83,20 +88,50 @@ function myTweets(){
 
 var Spotify = require('node-spotify-api');
 
-function spotifyThis(){
+function spotifyThis(songname){
+    // var querySongName = "the+sign";
+    // if (songname === undefined){
+      
+    //   querySongName = "the+sign"
+    // }
+
+    var spotifyRequestURL = "https://api.spotify.com/v1/search&q=the%20sign"
     var spotify = new Spotify({
     id: "95de656343084d8f8bc0ecd55c2d028f",
     secret: "24181f3eb6c2484fb892671c30d5a53e",
     });
 
     spotify
-    .request('https://api.spotify.com/v1/tracks/7yCPwWs66K8Ba5lFuU2bcx')
-    .then(function(data) {
-    console.log(data); 
-    })
-    .catch(function(err) {
-    console.error('Error occurred: ' + err); 
-    });
+    .search(
+      {
+        type: 'track',
+        query: songname,
+        limit: 1,
+      },
+      function(err, data) {
+        if (err) {
+          return console.log('Error occurred: ' + err);
+        }
+      console.log(JSON.stringify(data, null, 2))
+      var dataPath = data.tracks.items[0];
+      var artists = "";
+      if (dataPath.album.artists.length > 1){
+        for (var j = 0; j < dataPath.album.artists.length; j++){
+          artists = artists + dataPath.album.artists[j].name.toString() + ", ";
+        }
+      } else {
+        artists = dataPath.album.artists[0].name.toString();
+      }
+     
+      console.log("Artist(s): " + artists) 
+      });
+    // )
+    // .then(function(data) {
+    // console.log(data); 
+    // })
+    // .catch(function(err) {
+    // console.error('Error occurred: ' + err); 
+    // });
 };
 
 
@@ -116,7 +151,7 @@ function spotifyThis(){
 //                              Functions & Variables
 //===================================================================================================
 
-var arg1 = process.argv[2].toLowerCase();
+var arg1 = process.argv[2];
 var arg2 = process.argv[3];
 
 
@@ -125,8 +160,28 @@ var arg2 = process.argv[3];
 //       day = "Sunday";
 //       break;
 
-switch  (arg1){
-  case "my-tweets":
-    myTweets();
-    break;
+if (arg1 === undefined){
+  console.log("Error! Could not interpret command. Please check spelling and try again.\n Available commands are: \n" +  
+  " 'my-tweets' - displays last 20 tweets; \n 'spotify-this' - gives basic song info; \n 'movie-this'" + 
+  "- returns movie information; \n 'do-what-it-says' - a surprise!")
+} else if (arg1 !== undefined){
+  arg1 = arg1.toLowerCase();
+  switch  (arg1){
+    case "my-tweets":
+      myTweets();
+      break;
+
+    case "spotify-this":
+      spotifyThis(arg2);
+      break;
+
+    case "movie-this":
+
+      break;
+  
+    default:
+      console.log("Whoops, something went wrong! Please try again.")
+      break;
+  }
 }
+
